@@ -30,7 +30,7 @@ typedef struct
   int idadePessoa;
   char classificacao[60];
   char municipio[50];
-  char ficouInternado[5];
+  char ficouInternado[20];
 } DadosCsv;
 
 void leCsv(FILE *csv, DadosCsv vetorCsv[]);
@@ -60,9 +60,9 @@ int main(void)
 void leCsv(FILE *csv, DadosCsv vetorCsv[])
 {
     int i;
-    for(i = 0; i < 10; i++){
+    for(i = 0; i < 100; i++){
         fscanf(csv, "%d-%d-%d,%d-%d-%d,", &vetorCsv[i].dataCadastro.ano, &vetorCsv[i].dataCadastro.mes, &vetorCsv[i].dataCadastro.dia, &vetorCsv[i].dataObito.ano, &vetorCsv[i].dataObito.mes, &vetorCsv[i].dataObito.dia);
-        fscanf(csv, "%11s,", vetorCsv[i].classificacao);
+        fscanf(csv, "%[^,],", vetorCsv[i].classificacao);        
         fscanf(csv, "%[^,],", vetorCsv[i].municipio);
         fscanf(csv, "\"%d %*[^,], %*[^,], %*[^,],", &vetorCsv[i].idadePessoa);
         fscanf(csv, "%[^,],", vetorCsv[i].comorbidadesPacientes.comorbidadePulmao);
@@ -71,16 +71,16 @@ void leCsv(FILE *csv, DadosCsv vetorCsv[])
         fscanf(csv, "%[^,],", vetorCsv[i].comorbidadesPacientes.comorbidadeDiabetes);
         fscanf(csv, "%[^,],", vetorCsv[i].comorbidadesPacientes.comorbidadeTabagismo);
         fscanf(csv, "%[^,],", vetorCsv[i].comorbidadesPacientes.comorbidadeObesidade);
-        fscanf(csv, "%4s", vetorCsv[i].ficouInternado);
+        fscanf(csv, "%4s %*[^\n]", vetorCsv[i].ficouInternado);
     }    
 }
 
 void mostraCsv(DadosCsv vetorCsv[])
 {
     int i;
-    for(i = 0; i < 10; i++){
-        printf("data cadastro = %d-%d-%d\n", vetorCsv[i].dataCadastro.dia, vetorCsv[i].dataCadastro.mes, vetorCsv[i].dataCadastro.ano);
-        printf("data obito = %d-%d-%d\n", vetorCsv[i].dataObito.dia, vetorCsv[i].dataObito.mes, vetorCsv[i].dataObito.ano);
+    for(i = 0; i < 100; i++){
+        printf("data cadastro = %d%d%d\n", vetorCsv[i].dataCadastro.dia, vetorCsv[i].dataCadastro.mes, vetorCsv[i].dataCadastro.ano);
+        printf("data obito = %d%d%d\n", vetorCsv[i].dataObito.dia, vetorCsv[i].dataObito.mes, vetorCsv[i].dataObito.ano);
         printf("classificacao = %s\n", vetorCsv[i].classificacao);
         printf("municipio = %s\n", vetorCsv[i].municipio);
         printf("idade pessoa = %d\n", vetorCsv[i].idadePessoa);
