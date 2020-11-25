@@ -43,7 +43,7 @@ int comparaStrings(char string1[], char string2[]);
 double CalculaPorcentagem(double valor1, double valor2);
 double PorcentagemPessoasConfirmadasInternadas(char Municipio[]);
 double PorcentagemPessoasQueMorreram(char Municipio[]);
-double PorcentagemPessoasInterndasQueMorreram(char Municipio[]);
+double PorcentagemPessoasInternadasQueMorreram(char Municipio[]);
 void converteStringMaiusculo(char string[]);
 int ehMesmaData(Data data1, Data data2);
 
@@ -67,8 +67,8 @@ int main(void)
   
   // para testar as funcoes   
   scanf("%s", Municipio);
-  percent =  PorcentagemPessoasInterndasQueMorreram(Municipio);  
-  printf("%.3f%%", percent);
+  percent =  PorcentagemPessoasQueMorreram(Municipio);  
+  printf("%.3lf%%", percent);
 
   fclose(csv);
 
@@ -150,28 +150,30 @@ double PorcentagemPessoasConfirmadasInternadas(char Municipio[])
   {
     for(i = 0; i < TAMANHOCSV; i++)
     {
-      if(strcmp(vetorCsv[i].classificacao, "Confirmados") == 0)
-      {
-        CasosConfirmados++;
-      }
       if((strcmp(vetorCsv[i].classificacao, "Confirmados") == 0) && (strcmp(vetorCsv[i].ficouInternado, "Sim") == 0))
       {
         PessoasInternadasConfirmadas++;
       }
+      else if(strcmp(vetorCsv[i].classificacao, "Confirmados") == 0)
+      {
+        CasosConfirmados++;
+      }
+      
     }
   }
   else
   {
     for(i = 0; i < TAMANHOCSV; i++)
     {
-      if((strcmp(vetorCsv[i].municipio, Municipio) == 0) && (strcmp(vetorCsv[i].classificacao, "Confirmados") == 0))
-      {
-        CasosConfirmados++;
-      }
       if((strcmp(vetorCsv[i].municipio, Municipio) == 0) && (strcmp(vetorCsv[i].classificacao, "Confirmados") == 0) && (strcmp(vetorCsv[i].ficouInternado, "Sim") == 0))
       {
         PessoasInternadasConfirmadas++;
       }
+      else if((strcmp(vetorCsv[i].municipio, Municipio) == 0) && (strcmp(vetorCsv[i].classificacao, "Confirmados") == 0))
+      {
+        CasosConfirmados++;
+      }
+      
     }       
   }
   return CalculaPorcentagem(PessoasInternadasConfirmadas, CasosConfirmados);
@@ -180,7 +182,7 @@ double PorcentagemPessoasConfirmadasInternadas(char Municipio[])
 double PorcentagemPessoasQueMorreram(char Municipio[])
 {
   int i;
-  double PessoasMorreram = 0; 
+  double PessoasMorreram = 0, PessoasMorreramCovid = 0; 
   Data data1;
   data1.dia = 0;
   data1.mes = 0;
@@ -192,7 +194,11 @@ double PorcentagemPessoasQueMorreram(char Municipio[])
   {
     for(i = 0; i < TAMANHOCSV; i++)
     {
-      if(!(ehMesmaData(vetorCsv[i].dataObito, data1)));
+      if((!(ehMesmaData(vetorCsv[i].dataObito, data1))) && (strcmp(vetorCsv[i].classificacao, "Confirmados") == 0))
+      {
+        PessoasMorreramCovid++;
+      }
+      else if(!(ehMesmaData(vetorCsv[i].dataObito, data1)))
       {
         PessoasMorreram++;
       }
@@ -202,19 +208,23 @@ double PorcentagemPessoasQueMorreram(char Municipio[])
   {
     for(i = 0; i < TAMANHOCSV; i++)
     {
-      if((strcmp(vetorCsv[i].municipio, Municipio) == 0) && (!(ehMesmaData(vetorCsv[i].dataObito, data1))))
+      if((strcmp(vetorCsv[i].municipio, Municipio) == 0) && (!(ehMesmaData(vetorCsv[i].dataObito, data1))) && (strcmp(vetorCsv[i].classificacao, "Confirmados") == 0))
+      {
+        PessoasMorreramCovid++;
+      }    
+      else if((strcmp(vetorCsv[i].municipio, Municipio) == 0) && (!(ehMesmaData(vetorCsv[i].dataObito, data1))))
       {
         PessoasMorreram++;
-      }    
+      }
     }
   }
-  return CalculaPorcentagem(PessoasMorreram, 202362);
+  return CalculaPorcentagem(PessoasMorreramCovid, PessoasMorreram);
 }
 
-double PorcentagemPessoasInterndasQueMorreram(char Municipio[])
+double PorcentagemPessoasInternadasQueMorreram(char Municipio[])
 {
   int i;
-  double PessoasInternadasMorreram = 0, PessoasInternadas = 0;
+  double PessoasInternadasMorreram = 0, PessoasConfirmadasMorreram = 0;
   Data data1;
   data1.dia = 0;
   data1.mes = 0;
@@ -226,13 +236,13 @@ double PorcentagemPessoasInterndasQueMorreram(char Municipio[])
   {
     for(i = 0; i < TAMANHOCSV; i++)
     {
-      if((strcmp(vetorCsv[i].ficouInternado, "Sim") == 0) && (!(ehMesmaData(vetorCsv[i].dataObito, data1))))
+      if((strcmp(vetorCsv[i].ficouInternado, "Sim") == 0) && (!(ehMesmaData(vetorCsv[i].dataObito, data1))) && (strcmp(vetorCsv[i].classificacao, "Confirmados") == 0))
       {
         PessoasInternadasMorreram++;
       }
-      else if(strcmp(vetorCsv[i].ficouInternado, "Sim") == 0)
+      else if((!(ehMesmaData(vetorCsv[i].dataObito, data1))) && (strcmp(vetorCsv[i].classificacao, "Confirmados") == 0))
       {
-        PessoasInternadas++;
+        PessoasConfirmadasMorreram++;
       }
     }
   }
@@ -240,17 +250,18 @@ double PorcentagemPessoasInterndasQueMorreram(char Municipio[])
   {
     for(i = 0; i < TAMANHOCSV; i++)
     {
-      if((strcmp(vetorCsv[i].municipio, Municipio) == 0) && (strcmp(vetorCsv[i].ficouInternado, "Sim") == 0))
-      {
-        PessoasInternadas++;
-      }
-      if((strcmp(vetorCsv[i].municipio, Municipio) == 0) && (strcmp(vetorCsv[i].ficouInternado, "Sim") == 0) && (!(ehMesmaData(vetorCsv[i].dataObito, data1))))
+      if((strcmp(vetorCsv[i].municipio, Municipio) == 0) && (strcmp(vetorCsv[i].ficouInternado, "Sim") == 0) && (!(ehMesmaData(vetorCsv[i].dataObito, data1))) && (strcmp(vetorCsv[i].classificacao, "Confirmados") == 0))
       {
         PessoasInternadasMorreram++;
-      }     
+      } 
+      else if((strcmp(vetorCsv[i].municipio, Municipio) == 0) && (!(ehMesmaData(vetorCsv[i].dataObito, data1))) && (strcmp(vetorCsv[i].classificacao, "Confirmados") == 0))
+      {
+        PessoasConfirmadasMorreram++;
+      }
+          
     }
   }
-  return CalculaPorcentagem(PessoasInternadasMorreram, PessoasInternadas);
+  return CalculaPorcentagem(PessoasInternadasMorreram, PessoasConfirmadasMorreram);
 }
 
 
