@@ -35,13 +35,17 @@ typedef struct
   char ficouInternado[20];
 } DadosCsv;
 
-void leCsv(FILE *csv, DadosCsv vetorCsv[]);
+DadosCsv vetorCsv[TAMANHOCSV];
+
+void leCsv(FILE *csv);
 void mostraCsv(DadosCsv vetorCsv[]);
 int comparaStrings(char string1[], char string2[]);
 double CalculaPorcentagem(double valor1, double valor2);
-double PorcentagemPessoasConfirmadasInternadas(DadosCsv vetorCsv[], char Municipio[]);
-double PorcentagemPessoasQueMorreram(DadosCsv vetorCsv[], char Municipio[]);
-double PorcentagemPessoasInterndasQueMorreram(DadosCsv vetorCsv[], char Municipio);
+double PorcentagemPessoasConfirmadasInternadas(char Municipio[]);
+double PorcentagemPessoasQueMorreram(char Municipio[]);
+double PorcentagemPessoasInterndasQueMorreram(char Municipio);
+
+
 
 int main(void)
 {
@@ -55,25 +59,30 @@ int main(void)
     exit(1);
   }
 
-  static DadosCsv vetorCsv[TAMANHOCSV];
+  
   char Municipio[20];
   double percent;
 
-  leCsv(csv, vetorCsv);
+  leCsv(csv);
   
   // para testar as funcoes   
   scanf("%s", Municipio);
-  percent =  PorcentagemPessoasQueMorreram(vetorCsv, Municipio);  
-  printf("%.3lf%%", percent);
+  percent =  PorcentagemPessoasConfirmadasInternadas(Municipio);  
+  printf("%.3f", percent);
 
   fclose(csv);
 
   return 0;
 }
 
-void leCsv(FILE *csv, DadosCsv vetorCsv[])
+void leCsv(FILE *csv)
 {
   int i;
+
+  // ignorando primeira linha do csv
+  fscanf(csv, "%*[^\n]");
+
+  // lendo os dados do csv para o vetor de struct
   for (i = 0; i < TAMANHOCSV; i++)
   {
     fscanf(csv, "%d-%d-%d,%d-%d-%d,", &vetorCsv[i].dataCadastro.ano, &vetorCsv[i].dataCadastro.mes, &vetorCsv[i].dataCadastro.dia, &vetorCsv[i].dataObito.ano, &vetorCsv[i].dataObito.mes, &vetorCsv[i].dataObito.dia);
@@ -112,10 +121,10 @@ void mostraCsv(DadosCsv vetorCsv[])
 
 double CalculaPorcentagem(double valor1, double valor2)
 {
-  return (valor1 / valor2) * 100;
+  return (valor1 / valor2) * 100.00;
 }
 
-double PorcentagemPessoasConfirmadasInternadas(DadosCsv vetorCsv[], char Municipio[])
+double PorcentagemPessoasConfirmadasInternadas(char Municipio[])
 {
   int i;
   double CasosConfirmados = 0, PessoasInternadasConfirmadas = 0;
@@ -125,29 +134,29 @@ double PorcentagemPessoasConfirmadasInternadas(DadosCsv vetorCsv[], char Municip
     {
       if(strcmp(vetorCsv[i].classificacao, "Confirmados") == 0)
       {
-        CasosConfirmados += 1;
+        CasosConfirmados++;
       }
       if((strcmp(vetorCsv[i].classificacao, "Confirmados") == 0) && (strcmp(vetorCsv[i].ficouInternado, "Sim") == 0))
       {
-        PessoasInternadasConfirmadas += 1;
+        PessoasInternadasConfirmadas++;
       }
     }
     else
     {
       if((strcmp(vetorCsv[i].municipio, Municipio) == 0) && (strcmp(vetorCsv[i].classificacao, "Confirmados") == 0))
       {
-        CasosConfirmados += 1;
+        CasosConfirmados++;
       }
       if((strcmp(vetorCsv[i].municipio, Municipio) == 0) && (strcmp(vetorCsv[i].classificacao, "Confirmados") == 0) && (strcmp(vetorCsv[i].ficouInternado, "Sim") == 0))
       {
-        PessoasInternadasConfirmadas += 1;
+        PessoasInternadasConfirmadas++;
       }     
     }
   }
   return CalculaPorcentagem(PessoasInternadasConfirmadas, CasosConfirmados);
 }
 
-double PorcentagemPessoasQueMorreram(DadosCsv vetorCsv[], char Municipio[])
+double PorcentagemPessoasQueMorreram(char Municipio[])
 {
   int i;
   double PessoasMorreram = 0, TotalCasos = 0; 
@@ -177,7 +186,7 @@ double PorcentagemPessoasQueMorreram(DadosCsv vetorCsv[], char Municipio[])
   return CalculaPorcentagem(PessoasMorreram, TotalCasos);
 }
 
-double PorcentagemPessoasInterndasQueMorreram(DadosCsv vetorCsv[], char Municipio)
+double PorcentagemPessoasInterndasQueMorreram(char Municipio)
 {
   int i;
   double PessoasInternadasMorreram = 0, PessoasInternadas = 0;
@@ -208,3 +217,4 @@ double PorcentagemPessoasInterndasQueMorreram(DadosCsv vetorCsv[], char Municipi
   }
   return CalculaPorcentagem(PessoasInternadasMorreram, PessoasInternadas);
 }
+
