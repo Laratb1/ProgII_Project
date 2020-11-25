@@ -44,8 +44,8 @@ double CalculaPorcentagem(double valor1, double valor2);
 double PorcentagemPessoasConfirmadasInternadas(char Municipio[]);
 double PorcentagemPessoasQueMorreram(char Municipio[]);
 double PorcentagemPessoasInterndasQueMorreram(char Municipio);
-
-
+void converteStringMaiusculo(char string[]);
+int ehMesmaData(Data data1, Data data2);
 
 int main(void)
 {
@@ -67,8 +67,8 @@ int main(void)
   
   // para testar as funcoes   
   scanf("%s", Municipio);
-  percent =  PorcentagemPessoasConfirmadasInternadas(Municipio);  
-  printf("%.3f", percent);
+  percent =  PorcentagemPessoasQueMorreram(Municipio);  
+  printf("%.3f%%", percent);
 
   fclose(csv);
 
@@ -124,10 +124,26 @@ double CalculaPorcentagem(double valor1, double valor2)
   return (valor1 / valor2) * 100.00;
 }
 
+void converteStringMaiusculo(char string[])
+{
+  int i;
+  for (i = 0; i < strlen(string); i++)
+  {
+    string[i] = toupper(string[i]);
+  }
+}
+
+int ehMesmaData(Data data1, Data data2)
+{
+  // se os dias e meses da data inicial e final sejam iguais
+  return ((data1.dia == data2.dia) && (data1.mes == data2.mes)) ? True : False;
+}
+
 double PorcentagemPessoasConfirmadasInternadas(char Municipio[])
 {
   int i;
   double CasosConfirmados = 0, PessoasInternadasConfirmadas = 0;
+  converteStringMaiusculo(Municipio);
   for(i = 0; i < TAMANHOCSV; i++)
   {
     if(strcmp(Municipio, "TODAS") == 0)
@@ -160,61 +176,72 @@ double PorcentagemPessoasQueMorreram(char Municipio[])
 {
   int i;
   double PessoasMorreram = 0, TotalCasos = 0; 
+  Data data1;
+  data1.dia = 0;
+  data1.mes = 0;
+  data1.ano = 0;
+
+  converteStringMaiusculo(Municipio);
+  
   for(i = 0; i < TAMANHOCSV; i++)
   {
     if(strcmp(Municipio, "TODAS") == 0)
     {
-      // coloquei essa parte pois aparentemente o csv nao tem 202363
-      TotalCasos += 1;
-      if(vetorCsv[i].dataObito.dia != 0);
+      //TotalCasos += 1;
+      if(!(ehMesmaData(vetorCsv[i].dataObito, data1)));
       {
-        PessoasMorreram += 1;
+        PessoasMorreram++;
       }
-      
     }
     else
     {
-      // coloquei essa parte pois aparentemente o csv nao tem 202363
-      TotalCasos += 1;
-      if((strcmp(vetorCsv[i].municipio, Municipio) == 0) && (vetorCsv[i].dataObito.dia != 0))
+      //TotalCasos += 1;
+      if((strcmp(vetorCsv[i].municipio, Municipio) == 0) && (!(ehMesmaData(vetorCsv[i].dataObito, data1))))
       {
-        PessoasMorreram += 1;
-      }
-      
+        PessoasMorreram++;
+      }    
     }
   }
-  return CalculaPorcentagem(PessoasMorreram, TotalCasos);
+  return CalculaPorcentagem(PessoasMorreram, 202362);
 }
 
 double PorcentagemPessoasInterndasQueMorreram(char Municipio)
 {
   int i;
   double PessoasInternadasMorreram = 0, PessoasInternadas = 0;
+  Data data1;
+  data1.dia = 0;
+  data1.mes = 0;
+  data1.ano = 0;
+
+  converteStringMaiusculo(Municipio);
+  
   for(i = 0; i < TAMANHOCSV; i++)
   {
     if(strcmp(Municipio, "TODAS") == 0)
     {
       if(strcmp(vetorCsv[i].ficouInternado, "Sim") == 0)
       {
-        PessoasInternadas += 1;
+        PessoasInternadas++;
       }
-      if((strcmp(vetorCsv[i].ficouInternado, "Sim") == 0) && (vetorCsv[i].dataObito.dia != 0))
+      if((strcmp(vetorCsv[i].ficouInternado, "Sim") == 0) && (!(ehMesmaData(vetorCsv[i].dataObito, data1))))
       {
-        PessoasInternadasMorreram += 1;
+        PessoasInternadasMorreram++;
       }
     }
     else
     {
       if((strcmp(vetorCsv[i].municipio, Municipio) == 0) && (strcmp(vetorCsv[i].ficouInternado, "Sim") == 0))
       {
-        PessoasInternadas += 1;
+        PessoasInternadas++;
       }
-      if((strcmp(vetorCsv[i].municipio, Municipio) == 0) && (strcmp(vetorCsv[i].ficouInternado, "Sim") == 0) && (vetorCsv[i].dataObito.dia != 0))
+      if((strcmp(vetorCsv[i].municipio, Municipio) == 0) && (strcmp(vetorCsv[i].ficouInternado, "Sim") == 0) && (!(ehMesmaData(vetorCsv[i].dataObito, data1))))
       {
-        PessoasInternadasMorreram += 1;
+        PessoasInternadasMorreram++;
       }     
     }
   }
   return CalculaPorcentagem(PessoasInternadasMorreram, PessoasInternadas);
 }
+
 
