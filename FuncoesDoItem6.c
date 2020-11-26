@@ -67,7 +67,7 @@ int main(void)
   
   // para testar as funcoes   
   scanf("%s", Municipio);
-  percent =  PorcentagemPessoasQueMorreram(Municipio);  
+  percent =  PorcentagemPessoasConfirmadasInternadas(Municipio);  
   printf("%.3lf%%", percent);
 
   fclose(csv);
@@ -141,88 +141,111 @@ int ehMesmaData(Data data1, Data data2)
 
 double PorcentagemPessoasConfirmadasInternadas(char Municipio[])
 {
+  // inicializando variaveis
   int i;
   double CasosConfirmados = 0, PessoasInternadasConfirmadas = 0;
   
+  // convertendo a string para maiusculo
   converteStringMaiusculo(Municipio);
-  
+
+  // se a string municipio receber a palavra 'TODAS'
   if(strcmp(Municipio, "TODAS") == 0)
   {
+    // percorrendo o vetorCsv inteiro
     for(i = 0; i < TAMANHOCSV; i++)
     {
+      // caso a pessoa tenha sido contaminada e tenha ficado internada
       if((strcmp(vetorCsv[i].classificacao, "Confirmados") == 0) && (strcmp(vetorCsv[i].ficouInternado, "Sim") == 0))
       {
+        // incrementando pessoas confirmadas que ficaram internadas 
         PessoasInternadasConfirmadas++;
       }
-      else if(strcmp(vetorCsv[i].classificacao, "Confirmados") == 0)
+      // caso a pessoa tenha sido contaminada 
+      if(strcmp(vetorCsv[i].classificacao, "Confirmados") == 0)
       {
+        // incrementando casos confirmados 
         CasosConfirmados++;
       }
-      
     }
   }
+  // caso outra string seja passada
   else
   {
+    // percorrendo o vetorCsv inteiro
     for(i = 0; i < TAMANHOCSV; i++)
     {
+      // caso a pessoa tenha sido contaminada e tenha ficado internada em determinado municipio 
       if((strcmp(vetorCsv[i].municipio, Municipio) == 0) && (strcmp(vetorCsv[i].classificacao, "Confirmados") == 0) && (strcmp(vetorCsv[i].ficouInternado, "Sim") == 0))
       {
+        // incrementando pessoas confirmadas que ficaram internadas 
         PessoasInternadasConfirmadas++;
       }
-      else if((strcmp(vetorCsv[i].municipio, Municipio) == 0) && (strcmp(vetorCsv[i].classificacao, "Confirmados") == 0))
+      // caso a pessoa tenha sido contaminada em determinado municipio 
+      if((strcmp(vetorCsv[i].municipio, Municipio) == 0) && (strcmp(vetorCsv[i].classificacao, "Confirmados") == 0))
       {
+        // incrementando casos confirmados
         CasosConfirmados++;
       }
-      
     }       
   }
+  // retornando porcentagem de pessoas confirmadas que ficaram internadas 
   return CalculaPorcentagem(PessoasInternadasConfirmadas, CasosConfirmados);
 }
 
 double PorcentagemPessoasQueMorreram(char Municipio[])
 {
-  int i;
-  double PessoasMorreram = 0, PessoasMorreramCovid = 0; 
+  // inicializando variaveis
+  int i, totalPessoas = 0, PessoasMorreram = 0;
   Data data1;
   data1.dia = 0;
   data1.mes = 0;
   data1.ano = 0;
 
+  // convertendo a string para maiusculo
   converteStringMaiusculo(Municipio);
   
+  // se a string municipio receber a palavra 'TODAS'
   if(strcmp(Municipio, "TODAS") == 0)
   {
+    // percorrendo o vetorCsv inteiro
     for(i = 0; i < TAMANHOCSV; i++)
     {
-      if((!(ehMesmaData(vetorCsv[i].dataObito, data1))) && (strcmp(vetorCsv[i].classificacao, "Confirmados") == 0))
+      // caso a pessoa tenha sido contaminada
+      if (strcmp(vetorCsv[i].classificacao, "Confirmados") == 0)
       {
-        PessoasMorreramCovid++;
-      }
-      else if(!(ehMesmaData(vetorCsv[i].dataObito, data1)))
-      {
-        PessoasMorreram++;
+        // incrementando total de pessoas contaminadas
+        totalPessoas++;
+        // se a pessoa morreu
+        if (!ehMesmaData(vetorCsv[i].dataObito, data1))
+        // incrementanto pessoas que morreram 
+          PessoasMorreram++;
       }
     }
   }
+  // caso outra string seja passada
   else
   {
+    // percorrendo o vetorCsv inteiro
     for(i = 0; i < TAMANHOCSV; i++)
     {
-      if((strcmp(vetorCsv[i].municipio, Municipio) == 0) && (!(ehMesmaData(vetorCsv[i].dataObito, data1))) && (strcmp(vetorCsv[i].classificacao, "Confirmados") == 0))
+      // caso a pessoa tenha sido contaminada em determinado municipio
+      if ((strcmp(vetorCsv[i].municipio, Municipio) == 0) && (strcmp(vetorCsv[i].classificacao, "Confirmados") == 0))
       {
-        PessoasMorreramCovid++;
+        // incrementando total de pessoas contaminadas
+        totalPessoas++;
+        // se caso a pessoa morreu, incrementa a variável
+        if (!ehMesmaData(vetorCsv[i].dataObito, data1))
+          PessoasMorreram++;
       }    
-      else if((strcmp(vetorCsv[i].municipio, Municipio) == 0) && (!(ehMesmaData(vetorCsv[i].dataObito, data1))))
-      {
-        PessoasMorreram++;
-      }
     }
   }
-  return CalculaPorcentagem(PessoasMorreramCovid, PessoasMorreram);
+  // retornando porcentagem de pessoas que morreram
+  return CalculaPorcentagem(PessoasMorreram, totalPessoas);
 }
 
 double PorcentagemPessoasInternadasQueMorreram(char Municipio[])
 {
+  // inicializando variaveis
   int i;
   double PessoasInternadasMorreram = 0, PessoasConfirmadasMorreram = 0;
   Data data1;
@@ -230,38 +253,50 @@ double PorcentagemPessoasInternadasQueMorreram(char Municipio[])
   data1.mes = 0;
   data1.ano = 0;
 
+  // convertendo a string para maiusculo
   converteStringMaiusculo(Municipio);
-   
+
+  // se a string municipio receber a palavra 'TODAS'
   if(strcmp(Municipio, "TODAS") == 0)
   {
+    // percorrendo o vetorCsv inteiro
     for(i = 0; i < TAMANHOCSV; i++)
     {
+      // caso a pessoa confirmada tenha ficado internada e tenha vindo a obito 
       if((strcmp(vetorCsv[i].ficouInternado, "Sim") == 0) && (!(ehMesmaData(vetorCsv[i].dataObito, data1))) && (strcmp(vetorCsv[i].classificacao, "Confirmados") == 0))
       {
+        // incrementando pessoas contaminadas internadas que morreram 
         PessoasInternadasMorreram++;
       }
-      else if((!(ehMesmaData(vetorCsv[i].dataObito, data1))) && (strcmp(vetorCsv[i].classificacao, "Confirmados") == 0))
+      // caso a pessoa confirmada tenha vindo a obito 
+      if((!(ehMesmaData(vetorCsv[i].dataObito, data1))) && (strcmp(vetorCsv[i].classificacao, "Confirmados") == 0))
       {
+        // incrementando pessoas contaminadas que morreram 
         PessoasConfirmadasMorreram++;
       }
     }
   }
+  // caso outra string seja passada
   else
   {
+    // percorrendo o vetorCsv inteiro
     for(i = 0; i < TAMANHOCSV; i++)
     {
+      // caso a pessoa confirmada tenha ficado internada e tenha vindo a obito em determinado municipio
       if((strcmp(vetorCsv[i].municipio, Municipio) == 0) && (strcmp(vetorCsv[i].ficouInternado, "Sim") == 0) && (!(ehMesmaData(vetorCsv[i].dataObito, data1))) && (strcmp(vetorCsv[i].classificacao, "Confirmados") == 0))
       {
+        // incrementando pessoas contaminadas internadas que morreram 
         PessoasInternadasMorreram++;
       } 
-      else if((strcmp(vetorCsv[i].municipio, Municipio) == 0) && (!(ehMesmaData(vetorCsv[i].dataObito, data1))) && (strcmp(vetorCsv[i].classificacao, "Confirmados") == 0))
+      // caso a pessoa confirmada tenha vindo a obito em determinado municipio
+      if((strcmp(vetorCsv[i].municipio, Municipio) == 0) && (!(ehMesmaData(vetorCsv[i].dataObito, data1))) && (strcmp(vetorCsv[i].classificacao, "Confirmados") == 0))
       {
+        // incrementando pessoas contaminadas que morreram 
         PessoasConfirmadasMorreram++;
       }
-          
     }
   }
+  // retornando porcentagem de pessoas internadas que morreram
   return CalculaPorcentagem(PessoasInternadasMorreram, PessoasConfirmadasMorreram);
 }
-
 
