@@ -99,13 +99,13 @@ int calculaTotalCasos(char municipio[]);
 // função que determina a quantidade de casos
 int calculaQuantidadeDeCasosComDatas(Data dataInicial, Data dataFinal, char municipio[]);
 // função que retorna a porcentagem, dados dois valores
-float CalculaPorcentagem(float valor1, float valor2);
+float calculaPorcentagem(float valor1, float valor2);
 // função que calcula o desvio padrão, dadas duas datas
 float calculaDesvioPradraoEntreDatas(Data dataInicial, Data dataFinal);
 // função que calcula a media, datas duas datas
 float calculaMediaDeIdadeEntreDatas(Data dataInicial, Data dataFinal);
 // função que calcula a porcentagem de pessoas que morreram q não possuiam comorbidade
-float calculaPorcentagempessoasQueMorreramSemComorbidade(Data dataInicial, Data dataFinal);
+float calculaPorcentagemPessoasQueMorreramSemComorbidade(Data dataInicial, Data dataFinal);
 // função que realiza a leitura de uma data
 Data leData(void);
 // função que passa para a próxima data
@@ -376,7 +376,7 @@ void imprimeDadosItem7(FILE *arquivo, Data dataInicial, Data dataFinal)
 {
   // imprimindo dados formatados do arquivo 
   fprintf(arquivo, "A média e desvio padrão da idade: %.3f -- %.3f\n", calculaMediaDeIdadeEntreDatas(dataInicial, dataFinal), calculaDesvioPradraoEntreDatas(dataInicial, dataFinal));
-  fprintf(arquivo, "A %% de pessoas que morreram sem comorbidade: %.3f%%", calculaPorcentagempessoasQueMorreramSemComorbidade(dataInicial, dataFinal));
+  fprintf(arquivo, "A %% de pessoas que morreram sem comorbidade: %.3f%%", calculaPorcentagemPessoasQueMorreramSemComorbidade(dataInicial, dataFinal));
 }
 
 void porcentagemPessoasConfirmadasInternadas(FILE *arquivo, char Municipio[])
@@ -428,7 +428,7 @@ void porcentagemPessoasConfirmadasInternadas(FILE *arquivo, char Municipio[])
     }
   }
   // imprimindo porcentagem de pessoas confirmadas que ficaram internadas
-  fprintf(arquivo, "- A %% de pessoas com Covid-19 que ficaram internadas: %.3f%%\n", CalculaPorcentagem(pessoasInternadasConfirmadas, CasosConfirmados));
+  fprintf(arquivo, "- A %% de pessoas com Covid-19 que ficaram internadas: %.3f%%\n", calculaPorcentagem(pessoasInternadasConfirmadas, CasosConfirmados));
 }
 
 void porcentagemPessoasQueMorreram(FILE *arquivo, char Municipio[])
@@ -479,10 +479,10 @@ void porcentagemPessoasQueMorreram(FILE *arquivo, char Municipio[])
     }
   }
   // imprimindo porcentagem de pessoas que morreram no arquivo
-  fprintf(arquivo, "- A %% de pessoas com Covid-19 que morreram: %.3f%%\n", CalculaPorcentagem(pessoasQueMorreram, totalpessoas));
+  fprintf(arquivo, "- A %% de pessoas com Covid-19 que morreram: %.3f%%\n", calculaPorcentagem(pessoasQueMorreram, totalpessoas));
 }
 
-void porcentagempessoasInternadasQueMorreram(FILE *arquivo, char Municipio[])
+void porcentagemPessoasInternadasQueMorreram(FILE *arquivo, char Municipio[])
 {
   // inicializando variaveis
   int i, pessoasInternadasQueMorreram = 0, pessoasConfirmadasQueMorreram = 0;
@@ -531,7 +531,7 @@ void porcentagempessoasInternadasQueMorreram(FILE *arquivo, char Municipio[])
     }
   }
   // imprimindo porcentagem de pessoas internadas que morreram no arquivo
-  fprintf(arquivo, "- A %% de pessoas que ficaram internadas e morreram: %.3f%%\n", CalculaPorcentagem(pessoasInternadasQueMorreram, pessoasConfirmadasQueMorreram));
+  fprintf(arquivo, "- A %% de pessoas que ficaram internadas e morreram: %.3f%%\n", calculaPorcentagem(pessoasInternadasQueMorreram, pessoasConfirmadasQueMorreram));
 }
 
 int quantidadeDiasDoMes(int mes)
@@ -603,7 +603,7 @@ int calculaQuantidadeDeCasosComDatas(Data dataInicial, Data dataFinal, char muni
   return quantidadeDeCasos;
 }
 
-float CalculaPorcentagem(float valor1, float valor2)
+float calculaPorcentagem(float valor1, float valor2)
 {
   // retornando a porcentagem
   return (valor1 / valor2) * 100.00;
@@ -758,7 +758,7 @@ float calculaPorcentagemPessoasQueMorreramSemComorbidade(Data dataInicial, Data 
     }
   }
   // retornando porcentagem de pessoas que morreram e nao tinham comorbidade
-  return CalculaPorcentagem(pessoasQueMorreramSemComorbidade, pessoasQueMorreram);
+  return calculaPorcentagem(pessoasQueMorreramSemComorbidade, pessoasQueMorreram);
 }
 
 Data leData(void)
