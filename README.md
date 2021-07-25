@@ -1,3 +1,4 @@
 # Trabalho-Prog
 
-Leitura e manipulacao de arquivo csv
+Leitura e manipulação de arquivo csv em linguagem c
+
