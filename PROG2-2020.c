@@ -1,5 +1,5 @@
 /*
-NOME E MATRICULA: Kevin Carvalho de Jesus e Lara Tagarro Bernardes  
+NOME: Kevin Carvalho de Jesus e Lara Tagarro Bernardes  
 DATA DE ENTREGA:  4/11/2020
 UNIVERSIDADE: Universidade Federal do Espírito Santo - UFES
 DESCRIÇÃO: Programa em linguagem C para leitura e manipulação de dados de um arquivo csv que contém dados sobre o Covid 19 no ano de 2020 no estado do Espírito Santo.
